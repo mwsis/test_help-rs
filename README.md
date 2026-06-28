@@ -2,10 +2,18 @@
 
 Test helpers for Rust
 
+![Language](https://img.shields.io/badge/Rust-000000?style=flat&logo=rust&logoColor=white)
+[![License](https://img.shields.io/badge/License-BSD_3--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
+[![Crates.io](https://img.shields.io/crates/v/test_help-rs.svg)](https://crates.io/crates/test_help-rs)
+[![GitHub release](https://img.shields.io/github/v/release/synesissoftware/test_help-rs.svg)](https://github.com/synesissoftware/test_help-rs/releases/latest)
+![MSRV](https://img.shields.io/badge/MSRV-1.74-lightgrey)
+[![CI](https://github.com/synesissoftware/test_help-rs/actions/workflows/ci.yml/badge.svg)](https://github.com/synesissoftware/test_help-rs/actions/workflows/ci.yml)
+[![docs.rs](https://docs.rs/test_help-rs/badge.svg)](https://docs.rs/test_help-rs)
+
 
 ## Introduction
 
-Rust has powerful and easy-to-use unit-testing mechanisms, but there are some missing elements, particular around the use of floating-point values - `f32` and `f64` - that are provided by this crate to allowing for assertion of approximate equality, as in:
+Rust has powerful and easy-to-use unit-testing mechanisms, but there are some missing elements, particularly around the use of floating-point values - `f32` and `f64` - that are provided by this crate for asserting approximate equality, as in:
 
 ```Rust
 use test_helpers::{
@@ -38,6 +46,7 @@ fn example_test_of_vector_evaluation() {
 - [Components](#components)
 	- [Constants](#constants)
 	- [Enumerations](#enumerations)
+	- [Features](#features)
 	- [Functions](#functions)
 	- [Macros](#macros)
 	- [Structures](#structures)
@@ -47,7 +56,10 @@ fn example_test_of_vector_evaluation() {
 	- [Where to get help](#where-to-get-help)
 	- [Contribution guidelines](#contribution-guidelines)
 	- [Dependencies](#dependencies)
-			- [Dev Dependencies](#dev-dependencies)
+		- [Efferent (fan-out)](#efferent-fan-out)
+		- [Build Dependencies](#build-dependencies)
+		- [Development Dependencies](#development-dependencies)
+		- [Afferent (fan-in)](#afferent-fan-in)
 	- [Related projects](#related-projects)
 	- [License](#license)
 
@@ -57,7 +69,7 @@ fn example_test_of_vector_evaluation() {
 Reference in **Cargo.toml** in the usual way:
 
 ```toml
-test_help-rs = { version = "~0.1" }
+test_help-rs = { version = "0.1" }
 ```
 
 
@@ -65,18 +77,39 @@ test_help-rs = { version = "~0.1" }
 
 ### Constants
 
-The following constants are defined:
+The following constants are defined in [`constants`](https://docs.rs/test_help-rs/latest/test_helpers/constants/index.html):
 
-* `DEFAULT_MARGIN` - specifies the default comparison margin value, which is a xxxx;
-* `DEFAULT_MULTIPLIER` - specifies the default comparison multiplier value, which is a xxxx;
+* `DEFAULT_MARGIN` — default absolute margin (`0.0001`, i.e. 1e-4) used by the stock two-argument assertion macros when no custom evaluator is supplied;
+* `DEFAULT_MULTIPLIER` — default relative multiplier (`0.000001`, i.e. 1e-6) used together with `DEFAULT_MARGIN` by the stock [`zero_margin_or_multiplier()`](https://docs.rs/test_help-rs/latest/test_helpers/fn.zero_margin_or_multiplier.html) evaluator path;
 
 
 ### Enumerations
 
-The following enuemrations are defined:
+The following enumerations are defined:
 
-* `ComparisonResult` - ... TBC;
-* `VectorComparisonResult` - ... TBC;
+* [`ComparisonResult`](https://docs.rs/test_help-rs/latest/test_helpers/enum.ComparisonResult.html) — outcome of comparing two scalar `f64` values:
+	* `ExactlyEqual` — the values are identical (including matching infinities and, when the `"nan-equality"` feature is enabled, both `NaN`);
+	* `ApproximatelyEqual` — the values differ but are within the margin or multiplier tolerance of the evaluator;
+	* `Unequal` — the values are not equal under the evaluator;
+* [`VectorComparisonResult`](https://docs.rs/test_help-rs/latest/test_helpers/enum.VectorComparisonResult.html) — outcome of comparing two vectors of `f64` values:
+	* `ExactlyEqual` — same length and every element pair is exactly equal;
+	* `ApproximatelyEqual` — same length and every element pair is equal within the evaluator tolerance;
+	* `DifferentLengths { expected_length, actual_length }` — the vectors have different lengths;
+	* `UnequalElements { index_of_first_unequal_element, expected_value_of_first_unequal_element, actual_value_of_first_unequal_element }` — same length but at least one element pair is unequal under the evaluator;
+
+
+### Features
+
+The following optional features are defined in **Cargo.toml**:
+
+* **Crate-specific features**:
+
+	* `nan-equality` — allows two `f64::NAN` values to be treated as equal for stock comparisons (does not affect custom [`ApproximateEqualityEvaluator`](https://docs.rs/test_help-rs/latest/test_helpers/traits/trait.ApproximateEqualityEvaluator.html) implementations);
+	* `nightly-constants` — enables unit tests for additional `std::f64` constants that require the unstable `more_float_constants` feature; build and test with a nightly toolchain via `./scripts/test-nightly-constants` (this feature is for crate development only and is not required by downstream consumers);
+
+* **General features**:
+
+	* `null-feature` — a feature that has no effect (and, thus, is useful for simplifying driver scripts);
 
 
 ### Functions
@@ -92,12 +125,16 @@ The following functions are defined:
 
 ### Macros
 
-The following macros are defined:
+The following macros are defined (re-exported at the crate root via [`test_helpers`](https://docs.rs/test_help-rs/latest/test_helpers/index.html)):
 
-* `assert_scalar_eq_approx!()` - asserts approximate equality of expected and actual values, with an optional evaluator;
-* `assert_scalar_ne_approx!()` - asserts approximate inequality of expected and actual values, with an optional evaluator;
-* `assert_vector_eq_approx!()` - asserts approximate equality of expected and actual vectors of values, with an optional evaluator;
-* `assert_vector_ne_approx!()` - asserts approximate inequality of expected and actual vectors of values, with an optional evaluator;
+* `assert_scalar_eq_approx!(expected, actual)` — asserts approximate equality using the stock [`zero_margin_or_multiplier()`](https://docs.rs/test_help-rs/latest/test_helpers/fn.zero_margin_or_multiplier.html) evaluator (`DEFAULT_MULTIPLIER` / `DEFAULT_MARGIN`);
+* `assert_scalar_eq_approx!(expected, actual, evaluator)` — asserts approximate equality using a custom [`ApproximateEqualityEvaluator`](https://docs.rs/test_help-rs/latest/test_helpers/traits/trait.ApproximateEqualityEvaluator.html);
+* `assert_scalar_ne_approx!(expected, actual)` — asserts approximate inequality using the stock evaluator;
+* `assert_scalar_ne_approx!(expected, actual, evaluator)` — asserts approximate inequality using a custom evaluator;
+* `assert_vector_eq_approx!(expected, actual)` — asserts approximate equality of two vectors (slices, arrays, or `Vec`) using the stock evaluator;
+* `assert_vector_eq_approx!(expected, actual, evaluator)` — asserts approximate vector equality using a custom evaluator;
+* `assert_vector_ne_approx!(expected, actual)` — asserts approximate vector inequality using the stock evaluator;
+* `assert_vector_ne_approx!(expected, actual, evaluator)` — asserts approximate vector inequality using a custom evaluator;
 
 
 ### Structures
@@ -115,7 +152,21 @@ The following traits are defined:
 
 ## Examples
 
-T.B.C.
+Example programs are provided in the **examples** directory:
+
+* [**examples/scalars.rs**](./examples/scalars.rs) — scalar approximate equality and inequality:
+
+```sh
+cargo run --example scalars
+```
+
+* [**examples/vectors.rs**](./examples/vectors.rs) — vector approximate equality and inequality (slice and `Vec`):
+
+```sh
+cargo run --example vectors
+```
+
+**scalars** exercises `assert_scalar_eq_approx!()` and `assert_scalar_ne_approx!()` with margin- and multiplier-based evaluators. **vectors** includes the README introduction example and similar pass/fail demonstrations for vector assertions.
 
 
 ## Project Information
@@ -133,14 +184,34 @@ Defect reports, feature requests, and pull requests are welcome on https://githu
 ### Dependencies
 
 
-Crates upon which **test_help-rs** depend:
+#### Efferent (fan-out)
 
-* [**base-traits**](https://github.com/synesissoftware/base-traits);
+Libraries upon which **test_help-rs** depends:
+
+* [**base-traits**](https://github.com/synesissoftware/base-traits) — [`ToF64`](https://docs.rs/base-traits/latest/base_traits/trait.ToF64.html) trait used by [`TestableAsF64`](https://docs.rs/test_help-rs/latest/test_helpers/traits/trait.TestableAsF64.html);
 
 
-##### Dev Dependencies
+#### Build Dependencies
+
+Libraries used only when building **test_help-rs** (not required by downstream consumers):
+
+* [**bt-rs**](https://github.com/synesissoftware/bt-rs) — [`rustc::compiler_version()`](https://docs.rs/bt-rs/latest/bt_rs/rustc/fn.compiler_version.html) in **build.rs** to detect Rust 1.94+ and set the `rustc_1_94_or_newer` cfg for unit tests of stable `std::f64::consts` added in that release;
+
+
+#### Development Dependencies
 
 None currently.
+
+
+#### Afferent (fan-in)
+
+Projects that depend on **test_help-rs** (typically as a **dev-dependency** for unit tests):
+
+* [**auto_buffer.Rust**](https://github.com/synesissoftware/auto_buffer.Rust);
+* [**collect-rs**](https://github.com/synesissoftware/collect-rs);
+* [**libpath.Rust**](https://github.com/synesissoftware/libpath.Rust);
+* [**p99.Rust**](https://github.com/synesissoftware/p99.Rust);
+* [**shwild.Rust**](https://github.com/synesissoftware/shwild.Rust);
 
 
 ### Related projects
