@@ -81,7 +81,7 @@ pub mod traits;
 
 mod internal;
 #[macro_use]
-mod macros;
+mod assertions;
 mod utils;
 
 declare_and_publish!(

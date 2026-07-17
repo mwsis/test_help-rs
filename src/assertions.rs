@@ -1,6 +1,6 @@
-// macros.rs : test_help-rs
+// assertions.rs : test_help-rs
 
-// Macros
+// Assertion macros
 
 /// Asserts that two scalar values are approximately equal.
 ///
