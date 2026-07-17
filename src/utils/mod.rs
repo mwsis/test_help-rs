@@ -1,23 +1,9 @@
 // mod.rs : src/utils
 
-macro_rules! declare_and_publish {
-    ($mod_name:ident, $($type_name:ident),* $(,)?) => {
-        mod $mod_name;
+use crate::macros::declare_and_publish;
 
-        pub use $mod_name::{
-            $($type_name),*
-        };
-    };
-    (crate: $mod_name:ident, $($type_name:ident),* $(,)?) => {
-        mod $mod_name;
 
-        pub(crate) use $mod_name::{
-            $($type_name),*
-        };
-    };
-}
-
-declare_and_publish!(crate:
+declare_and_publish!(crate
     compare,
     compare_approximate_equality_by_margin,
     compare_approximate_equality_by_multiplier,

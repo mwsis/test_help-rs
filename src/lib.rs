@@ -63,15 +63,9 @@
 #![allow(non_camel_case_types)]
 #![cfg_attr(all(test, feature = "nightly-constants"), feature(more_float_constants))]
 
-macro_rules! declare_and_publish {
-    ($mod_name:ident, $($type_name:ident),* $(,)?) => {
-        mod $mod_name;
+pub(crate) mod macros;
 
-        pub use $mod_name::{
-            $($type_name),*
-        };
-    };
-}
+use crate::macros::declare_and_publish;
 
 declare_and_publish!(comparison_result, ComparisonResult);
 declare_and_publish!(vector_comparison_result, VectorComparisonResult);
@@ -79,9 +73,9 @@ declare_and_publish!(vector_comparison_result, VectorComparisonResult);
 pub mod constants;
 pub mod traits;
 
-mod internal;
 #[macro_use]
 mod assertions;
+mod internal;
 mod utils;
 
 declare_and_publish!(

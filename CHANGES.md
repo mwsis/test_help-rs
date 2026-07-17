@@ -3,6 +3,7 @@
 
 ## 0.1.3 - 17th July 2026
 
+* updated internal utility macro `declare_and_publish!()` to match that of **base-traits**;
 * preparatory changes;
 * applied improved formatting;
 
