@@ -1,6 +1,13 @@
 # test_help-rs Changes <!-- omit in toc -->
 
 
+## 0.1.3 - 17th July 2026
+
+* updated internal utility macro `declare_and_publish!()` to match that of **base-traits**;
+* preparatory changes;
+* applied improved formatting;
+
+
 ## 0.1.2 - 14th July 2026
 
 * updated dependencies;

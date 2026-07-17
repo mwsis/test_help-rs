@@ -1,11 +1,11 @@
 // evaluate_scalar.rs : src/api
 
 use crate::{
+    ComparisonResult,
     traits::{
         ApproximateEqualityEvaluator,
         TestableAsF64,
     },
-    ComparisonResult,
 };
 
 use std::fmt as std_fmt;

@@ -1,12 +1,12 @@
 // evaluate_vector.rs : src/api
 
 use crate::{
+    ComparisonResult,
+    VectorComparisonResult,
     traits::{
         ApproximateEqualityEvaluator,
         TestableAsF64,
     },
-    ComparisonResult,
-    VectorComparisonResult,
 };
 
 use super::evaluate_scalar_eq_approx;

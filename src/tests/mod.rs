@@ -6,10 +6,10 @@
 use crate as test_helpers;
 
 use test_helpers::{
-    traits::ApproximateEqualityEvaluator,
     ComparisonResult,
     margin,
     multiplier,
+    traits::ApproximateEqualityEvaluator,
     zero_margin_or_multiplier,
 };
 
@@ -107,7 +107,7 @@ mod TEST_SCALAR_ASSERTS {
     use super::*;
 
 
-    struct CustomEvaluator{}
+    struct CustomEvaluator {}
 
     impl ApproximateEqualityEvaluator for CustomEvaluator {
         fn evaluate(
@@ -118,8 +118,7 @@ mod TEST_SCALAR_ASSERTS {
             ComparisonResult, // comparison_result
             Option<f64>,      // margin_factor
             Option<f64>,      // multiplier_factor
-        )
-        {
+        ) {
             (
                 if expected == actual {
                     ComparisonResult::ExactlyEqual
@@ -141,7 +140,6 @@ mod TEST_SCALAR_ASSERTS {
 
         #[test]
         fn TEST_literals() {
-
             assert_scalar_eq_approx!(-1.23456789e-10, -1.23456789e-10);
             assert_scalar_eq_approx!(-0.123456789, -0.123456789);
             assert_scalar_eq_approx!(-0.1, -0.1);
@@ -153,7 +151,6 @@ mod TEST_SCALAR_ASSERTS {
 
         #[test]
         fn TEST_f64_ASSOCIATED_CONSTANTS() {
-
             assert_scalar_eq_approx!(f64::EPSILON, f64::EPSILON);
             assert_scalar_eq_approx!(f64::INFINITY, f64::INFINITY);
             assert_scalar_eq_approx!(f64::MAX, f64::MAX);
@@ -220,15 +217,23 @@ mod TEST_SCALAR_ASSERTS {
     }
 
     #[test]
-    #[cfg_attr(not(feature = "nan-equality"), should_panic(expected = "assertion failed: failed to verify approximate equality: expected=NaN, actual=NaN, margin_factor=0.0001, multiplier_factor=0.000001"))]
+    #[cfg_attr(
+        not(feature = "nan-equality"),
+        should_panic(
+            expected = "assertion failed: failed to verify approximate equality: expected=NaN, actual=NaN, margin_factor=0.0001, multiplier_factor=0.000001"
+        )
+    )]
     fn TEST_assert_scalar_eq_approx_2_PARAMETER_WITH_NAN() {
-
         assert_scalar_eq_approx!(f64::NAN, f64::NAN);
     }
     #[test]
-    #[cfg_attr(feature = "nan-equality", should_panic(expected = "assertion failed: failed to verify approximate inequality: expected=NaN, actual=NaN, margin_factor=0.0001, multiplier_factor=0.000001"))]
+    #[cfg_attr(
+        feature = "nan-equality",
+        should_panic(
+            expected = "assertion failed: failed to verify approximate inequality: expected=NaN, actual=NaN, margin_factor=0.0001, multiplier_factor=0.000001"
+        )
+    )]
     fn TEST_assert_scalar_ne_approx_2_PARAMETER_WITH_NAN() {
-
         assert_scalar_ne_approx!(f64::NAN, f64::NAN);
     }
 
@@ -236,13 +241,11 @@ mod TEST_SCALAR_ASSERTS {
     /// behaviour
     #[test]
     fn TEST_assert_scalar_ne_approx_3_PARAMETER_WITH_CustomEvaluator() {
-
-        assert_scalar_ne_approx!(f64::NAN, f64::NAN, CustomEvaluator{});
+        assert_scalar_ne_approx!(f64::NAN, f64::NAN, CustomEvaluator {});
     }
 
     #[test]
     fn TEST_assert_scalar_eq_approx_2_PARAMETER_FOR_APPROXIMATELY_EQUAL_VALUES() {
-
         assert_scalar_eq_approx!(0.12345678, 0.12345679);
         assert_scalar_eq_approx!(0.12345678, 0.12345677);
     }
@@ -260,15 +263,18 @@ mod TEST_SCALAR_ASSERTS {
     }
 
     #[test]
-    #[should_panic(expected = "assertion failed: failed to verify approximate equality: expected=0.12345678, actual=0.12345679, margin_factor=0.000000001")]
+    #[should_panic(
+        expected = "assertion failed: failed to verify approximate equality: expected=0.12345678, actual=0.12345679, margin_factor=0.000000001"
+    )]
     fn TEST_assert_scalar_eq_approx_3_PARAMETER_margin_SHOULD_FAIL_1() {
         assert_scalar_eq_approx!(0.12345678, 0.12345679, margin(0.000000001));
     }
 
     #[test]
-    #[should_panic(expected = "assertion failed: failed to verify approximate inequality: expected=0.12345678, actual=0.12345678, margin_factor=0.0001, multiplier_factor=0.000001")]
+    #[should_panic(
+        expected = "assertion failed: failed to verify approximate inequality: expected=0.12345678, actual=0.12345678, margin_factor=0.0001, multiplier_factor=0.000001"
+    )]
     fn TEST_assert_scalar_ne_approx_2_PARAMETER_FOR_APPROXIMATELY_EQUAL_VALUES_SHOULD_FAIL_1() {
-
         assert_scalar_ne_approx!(0.12345678, 0.12345678);
     }
 }
@@ -314,27 +320,31 @@ mod TEST_VECTOR_ASSERTS {
     }
 
     #[test]
-    #[should_panic(expected = "assertion failed: failed to verify approximate equality for vectors: expected-length 2 differs from actual-length 1")]
+    #[should_panic(
+        expected = "assertion failed: failed to verify approximate equality for vectors: expected-length 2 differs from actual-length 1"
+    )]
     fn TEST_assert_vector_eq_approx_2_PARAMETER_SLICE_INSTANCES_DIFFERENT_LENGTHS() {
-        let expected : &[f64] = &[ -2.0, -3.0 ];
-        let actual : &[f64] = &[ 0.0 ];
+        let expected : &[f64] = &[-2.0, -3.0];
+        let actual : &[f64] = &[0.0];
 
         assert_vector_eq_approx!(expected, actual);
     }
 
     #[test]
-    #[should_panic(expected = "assertion failed: failed to verify approximate equality for vectors: at index 1 expected=-3.0, actual=-3.001, margin_factor=0.01, multiplier_factor=0.0001")]
+    #[should_panic(
+        expected = "assertion failed: failed to verify approximate equality for vectors: at index 1 expected=-3.0, actual=-3.001, margin_factor=0.01, multiplier_factor=0.0001"
+    )]
     fn TEST_assert_vector_eq_approx_3_PARAMETER_VECTORS_SAME_LENGTH_DIFFERENT_ELEMENTS() {
-        let expected : &[f64] = &[ -2.0, -3.0, -4.0 ];
-        let actual = Vec::from([ -2.0, -3.001, -4.0 ]);
+        let expected : &[f64] = &[-2.0, -3.0, -4.0];
+        let actual = Vec::from([-2.0, -3.001, -4.0]);
 
         assert_vector_eq_approx!(expected, actual, zero_margin_or_multiplier(0.0001, 0.01));
     }
 
     #[test]
     fn TEST_assert_vector_eq_approx_3_PARAMETER_VECTORS_SAME_LENGTH_DIFFERENT_ELEMENTS_WITH_PERMISSIVE_multiplier() {
-        let expected : &[f64] = &[ -2.0, -3.0, -4.0 ];
-        let actual = Vec::from([ -2.0, -3.000001, -4.0 ]);
+        let expected : &[f64] = &[-2.0, -3.0, -4.0];
+        let actual = Vec::from([-2.0, -3.000001, -4.0]);
 
         assert_vector_eq_approx!(expected, actual, multiplier(0.01));
     }
@@ -356,11 +366,10 @@ mod TEST_README_EXAMPLES {
 
     #[test]
     fn TEST_example_test_of_vector_evaluation() {
-        let expected = &[ 3.0, -40404.0, 1.23456 ];
-        let actual = Vec::from([ 3.0, -40410.0, 1.234567 ]);
+        let expected = &[3.0, -40404.0, 1.23456];
+        let actual = Vec::from([3.0, -40410.0, 1.234567]);
         assert_vector_eq_approx!(expected, actual, multiplier(0.00015));
     }
-
 }
 
 
