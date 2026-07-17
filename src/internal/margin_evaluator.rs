@@ -1,9 +1,9 @@
 // margin_evaluator.rs : src/internal
 
 use crate::{
+    ComparisonResult,
     traits::ApproximateEqualityEvaluator,
     utils::compare_approximate_equality_by_margin,
-    ComparisonResult,
 };
 
 
