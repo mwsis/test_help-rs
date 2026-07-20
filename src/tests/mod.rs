@@ -1,5 +1,6 @@
 // mod.rs : src/tests
 
 mod assertions;
+mod assertions_as_str;
 
 // ///////////////////////////// end of file //////////////////////////// //
