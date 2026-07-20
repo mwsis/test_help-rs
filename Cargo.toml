@@ -57,6 +57,11 @@ path = "examples/vectors.rs"
 default = [
 ]
 
+full = [
+	"nan-equality",
+	"nightly-constants",
+]
+
 # General features:
 #
 # - "null-feature" - a feature that has no effect (and, thus, is useful for simplifying driver scripts);
