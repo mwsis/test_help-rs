@@ -88,9 +88,9 @@ bt-rs = { version = "0.0", default-features = false, features = [
 
 [dependencies]
 
-base-traits = { version = "0", default-features = false, features = [
+base-traits = { version = ">=0.1.2, <1.0.0", default-features = false, features = [
 	"implement-AsStr-for-built_ins",
-	"implement-AsStr-for-standard_collection_types", # TODO: replace with 0.1.2+ of base-traits` "implement-AsStr-for-String"
+	"implement-AsStr-for-String",
 	"implement-ToF64-for-built_ins",
 ] }
 
