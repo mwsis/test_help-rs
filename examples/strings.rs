@@ -11,7 +11,7 @@ use std::panic as std_panic;
 
 
 struct MyString {
-    label : String
+    label : String,
 }
 
 impl AsStr for MyString {
@@ -26,7 +26,9 @@ fn main() {
         println!("compare a `MyString` with `String` with same underlying string contents:");
 
         let expected : String = "abcd".into();
-        let actual : MyString = MyString{label: "abcd".into()};
+        let actual : MyString = MyString {
+            label : "abcd".into()
+        };
 
         // this one passes
         assert_as_str_eq!(expected, actual);
@@ -48,7 +50,9 @@ fn main() {
         println!("compare a `MyString` with `String` with different underlying string contents:");
 
         let expected : String = "abcd".into();
-        let actual : MyString = MyString{label: "abce".into()};
+        let actual : MyString = MyString {
+            label : "abce".into()
+        };
 
         // this one passes
         assert_as_str_ne!(expected, actual);
