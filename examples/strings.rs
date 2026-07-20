@@ -16,7 +16,7 @@ struct MyString {
 
 impl AsStr for MyString {
     fn as_str(&self) -> &str {
-        return &self.label
+        &self.label
     }
 }
 
